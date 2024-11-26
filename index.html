@@ -53,7 +53,7 @@
                 img.onload = async function() {
                     const startTimestamp = performance.now();
                     // const { data: { text } } = await Tesseract.recognize(img);
-                    const worker = await Tesseract.createWorker('tha');
+                    const worker = await Tesseract.createWorker(['eng', 'tha']);
                     const { data: { text } } = await worker.recognize(img);
                     await worker.terminate();
                     const endTimestamp = performance.now();
