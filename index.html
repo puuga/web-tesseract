@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>web-tesseract</title>
+</head>
+<body>
+    <h1>web-tesseract</h1>
+    <div>
+        <input type="file" name="file" id="file" accept="image/*">
+        <button id="read-image-btn">Read Image</button>
+    </div>
+    
+    <div>
+        <div><strong>Image Preview</strong></div>
+        <div>
+            <img id="img-preview">
+        </div>
+    </div>
+
+    <div>
+        <div><strong>OCR Result</strong></div>
+        <div id="ocr-result"></div>
+    </div>
+
+    <div>
+        <div><strong>Time Spend</strong></div>
+        <div id="time-spend-result"></div>
+    </div>
+
+    <!-- v5 -->
+    <script src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js'></script>
+
+    <script>
+        const readImageBtn = document.getElementById('read-image-btn');
+        readImageBtn.addEventListener('click', onReadImageClick);
+
+        function onReadImageClick() {
+            const file = document.getElementById('file').files[0];
+            if (!file) {
+                console.error('No file selected');
+                return;
+            }
+
+            console.info('file selected');
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                document.getElementById('img-preview').src = e.target.result;
+
+                const img = new Image();
+                img.src = e.target.result;
+                img.onload = async function() {
+                    const startTimestamp = performance.now();
+                    // const { data: { text } } = await Tesseract.recognize(img);
+                    const worker = await Tesseract.createWorker('tha');
+                    const { data: { text } } = await worker.recognize(img);
+                    await worker.terminate();
+                    const endTimestamp = performance.now();
+
+                    document.getElementById('ocr-result').innerText = text;
+                    document.getElementById('time-spend-result').innerText = `${endTimestamp - startTimestamp} ms`;
+                };
+            };
+            reader.readAsDataURL(file);
+        }
+    </script>
+</body>
+</html>
