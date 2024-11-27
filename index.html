@@ -54,6 +54,9 @@
                     const startTimestamp = performance.now();
                     // const { data: { text } } = await Tesseract.recognize(img);
                     const worker = await Tesseract.createWorker(['eng', 'tha']);
+                    // await worker.setParameters({
+                    //     tessedit_char_whitelist: '0123456789',
+                    // });
                     const { data: { text } } = await worker.recognize(img);
                     await worker.terminate();
                     const endTimestamp = performance.now();
